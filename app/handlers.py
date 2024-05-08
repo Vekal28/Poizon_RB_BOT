@@ -1,3 +1,4 @@
+import asyncio
 from aiogram import F, Router
 from aiogram.types import Message, CallbackQuery
 from aiogram.filters import CommandStart
@@ -13,6 +14,10 @@ class Convert(StatesGroup):
     value = State()
     massa = State()
 
+async def typing_dots_effect(message: Message, text: str, duration: int = 0):
+    for i in range(duration):
+        await message.edit_text(f"{text}{'.' * (i % 4)}")
+        await asyncio.sleep(1)
 def Converting(value, massa):
     res = massa * 420 / currency.get_usd_rub() + value * 1.04 / currency.get_usd_chy() + 2 + 12
     return f"Итоговая цена: {math.ceil(res)}$ / {math.ceil(res * currency.get_usd_byn())} byn\n\nИтоговая стоимость указана без учета доставки по городам Беларуси. Доставка по РБ рассчитывается исходя из тарифов Европочты."
@@ -59,8 +64,10 @@ async def get_value(message: Message, state=FSMContext):
         else:
             await state.update_data(value=value)
             data = await state.get_data()
-            #await message.answer(f"value: {data["value"]}\nmass: {data["res"]}")
-            await message.answer(text=Converting(data["value"], data["massa"]), reply_markup=kb.markup)
+            sent_message = await message.answer("Расчёт итоговой стоимости")
+            await typing_dots_effect(message=sent_message, text="Расчёт итоговой стоимости.", duration=3)
+            final_price = Converting(data["value"], data["massa"])
+            await sent_message.edit_text(text=final_price, reply_markup=kb.markup)
             await state.clear()
     except ValueError:
         await state.set_state(Convert.value)
