@@ -14,10 +14,11 @@ class Convert(StatesGroup):
     value = State()
     massa = State()
 
-async def typing_dots_effect(message: Message, text: str, duration: int = 0):
-    for i in range(duration):
-        await message.edit_text(f"{text}{'.' * (i % 4)}")
-        await asyncio.sleep(1)
+async def typing_dots_effect(message: Message, text: str, duration: int):
+    for _ in range(1):
+        for i in range(duration):
+            await message.edit_text(f"{text}{'.' * ((i % 4))}")
+            await asyncio.sleep(1)
 def Converting(value, massa):
     res = massa * 420 / currency.get_usd_rub() + value * 1.04 / currency.get_usd_chy() + 2 + 12
     return f"Итоговая цена: {math.ceil(res)}$ / {math.ceil(res * currency.get_usd_byn())} byn\n\nИтоговая стоимость указана без учета доставки по городам Беларуси. Доставка по РБ рассчитывается исходя из тарифов Европочты."
@@ -64,9 +65,12 @@ async def get_value(message: Message, state=FSMContext):
         else:
             await state.update_data(value=value)
             data = await state.get_data()
-            sent_message = await message.answer("Расчёт итоговой стоимости")
-            await typing_dots_effect(message=sent_message, text="Расчёт итоговой стоимости.", duration=3)
+            sent_message = await message.answer("Сейчас мы рассчитаем итоговую стоимость")
+            typing_task = asyncio.create_task(typing_dots_effect(sent_message, "Расчёт итоговой стоимости", duration=4))
+            # Параллельный расчёт итоговой стоимости
             final_price = Converting(data["value"], data["massa"])
+            # Ожидание завершения задачи с эффектом бегущих точек
+            await typing_task
             await sent_message.edit_text(text=final_price, reply_markup=kb.markup)
             await state.clear()
     except ValueError:
