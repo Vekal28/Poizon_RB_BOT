@@ -15,10 +15,10 @@ class Convert(StatesGroup):
     massa = State()
 
 async def typing_dots_effect(message: Message, text: str, duration: int):
-    for _ in range(1):
+    for _ in range(2):
         for i in range(duration):
             await message.edit_text(f"{text}{'.' * ((i % 4))}")
-            await asyncio.sleep(1)
+            await asyncio.sleep(0.3)
 def Converting(value, massa):
     res = massa * 420 / currency.get_usd_rub() + value * 1.04 / currency.get_usd_chy() + 2 + 12
     return f"Итоговая цена: {math.ceil(res)}$ / {math.ceil(res * currency.get_usd_byn())} byn\n\nИтоговая стоимость указана без учета доставки по городам Беларуси. Доставка по РБ рассчитывается исходя из тарифов Европочты."
