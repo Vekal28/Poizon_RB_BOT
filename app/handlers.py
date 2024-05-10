@@ -20,7 +20,16 @@ async def typing_dots_effect(message: Message, text: str, duration: int):
             await message.edit_text(f"{text}{'.' * ((i % 4))}")
             await asyncio.sleep(0.3)
 def Converting(value, massa):
-    res = massa * 420 / currency.get_usd_rub() + value * 1.04 / currency.get_usd_chy() + 2 + 12
+    ref = 0;
+    if ref <= 50:
+        ref = 5
+    elif 50 < ref <= 200:
+        ref = 8
+    elif 200 < ref <= 500:
+        ref = 12
+    else:
+        ref = 14
+    res = massa * 420 / currency.get_usd_rub() + value * 1.04 / currency.get_usd_chy() + 2 + ref
     return f"Итоговая цена: {math.ceil(res)}$ / {math.ceil(res * currency.get_usd_byn())} byn\n\nИтоговая стоимость указана без учета доставки по городам Беларуси. Доставка по РБ рассчитывается исходя из тарифов Европочты."
 
 @router.message(CommandStart())
