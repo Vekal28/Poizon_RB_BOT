@@ -6,6 +6,7 @@ from aiogram.fsm.state import StatesGroup, State
 from aiogram.fsm.context import FSMContext
 import app.currency as currency
 import math
+import json
 
 import app.keyboards as kb
 router = Router()
@@ -20,6 +21,9 @@ async def typing_dots_effect(message: Message, text: str, duration: int):
             await message.edit_text(f"{text}{'.' * ((i % 4))}")
             await asyncio.sleep(0.3)
 def Converting(value, massa):
+    data = {}
+    with open("data.json", "r") as f:
+        data = json.load(f)
     ref = 0;
     if ref <= 50:
         ref = 5
@@ -29,8 +33,8 @@ def Converting(value, massa):
         ref = 12
     else:
         ref = 14
-    res = massa * 420 / currency.get_usd_rub() + value * 1.04 / currency.get_usd_chy() + 2 + ref
-    return f"Итоговая цена: {math.ceil(res)}$ / {math.ceil(res * currency.get_usd_byn())} byn\n\nИтоговая стоимость указана без учета доставки по городам Беларуси. Доставка по РБ рассчитывается исходя из тарифов Европочты."
+    res = massa * 420 / data["usd_rub"] + value * 1.04 / data["usd_chy"] + 2 + ref
+    return f"Итоговая цена: {math.ceil(res)}$ / {math.ceil(res * data["usd_byn"])} byn\n\nИтоговая стоимость указана без учета доставки по городам Беларуси. Доставка по РБ рассчитывается исходя из тарифов Европочты."
 
 @router.message(CommandStart())
 async def cmd_start(message: Message):
