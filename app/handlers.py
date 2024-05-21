@@ -15,13 +15,13 @@ class Convert(StatesGroup):
     massa = State()
 
 async def typing_dots_effect(message: Message, text: str, duration: int):
-    for _ in range(2):
+    for _ in range(1):
         for i in range(duration):
             await message.edit_text(f"{text}{'.' * ((i % 4))}")
             await asyncio.sleep(0.3)
 def Converting(value, massa):
     data = {}
-    with open("data.json", "r") as f:
+    with open("app/data.json", "r") as f:
         data = json.load(f)
     ref = 0;
     if ref <= 50:
@@ -77,7 +77,7 @@ async def get_value(message: Message, state=FSMContext):
         else:
             await state.update_data(value=value)
             data = await state.get_data()
-            sent_message = await message.answer("Сейчас мы рассчитаем итоговую стоимость")
+            sent_message = await message.answer("Расчёт итоговой стoимости")
             typing_task = asyncio.create_task(typing_dots_effect(sent_message, "Расчёт итоговой стоимости", duration=4))
             # Параллельный расчёт итоговой стоимости
             final_price = Converting(data["value"], data["massa"])
