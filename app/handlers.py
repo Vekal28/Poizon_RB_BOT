@@ -23,16 +23,16 @@ def Converting(value, massa):
     data = {}
     with open("app/data.json", "r") as f:
         data = json.load(f)
-    ref = 0;
+    ref = 0
     if ref <= 50:
-        ref = 5
+        ref = 7
     elif 50 < ref <= 200:
-        ref = 8
+        ref = 10
     elif 200 < ref <= 500:
         ref = 12
     else:
         ref = 14
-    res = massa * 420 / data["usd_rub"] + value * 1.04 / data["usd_chy"] + 2 + ref
+    res = massa * 420 / data["usd_rub"] + value * 1.04 / data["usd_chy"] + 2.5 + ref
     return f"Итоговая цена: {math.ceil(res)}$ / {math.ceil(res * data["usd_byn"])} byn\n\nИтоговая стоимость указана без учета доставки по городам Беларуси. Доставка по РБ рассчитывается исходя из тарифов Европочты."
 
 @router.message(CommandStart())
@@ -55,15 +55,15 @@ async def category(callback: CallbackQuery, state=FSMContext):
     await state.set_state(Convert.value)
     massa = 0
     if callback.data == "shoes_jackets":
-        massa = 1.2
+        massa = 1.3
     if callback.data == "sweatshirts_pants":
-        massa = 0.6
+        massa = 0.8
     if callback.data == "bags_backpacks":
         massa = 0.8
     if callback.data == "shirts_shorts":
-        massa = 0.3
+        massa = 0.4
     if callback.data == "socks_underpants":
-        massa = 0.07
+        massa = 0.15
     await state.update_data(massa=massa)
     await callback.message.edit_text("Укажите цену в юанях")
 
